@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT Signal Monitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <style>
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background-color: #222; 
+            transition: background-color 0.5s;
+            display: flex; align-items: center; justify-content: center;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+        }
+        /* 中央の大きな文字 */
+        #message {
+            font-size: 10vw; /* 画面幅に合わせて自動調整 */
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            text-align: center;
+            user-select: none;
+        }
+        #status { 
+            position: absolute; bottom: 10px; left: 10px; 
+            color: white; font-size: 12px; opacity: 0.5; 
+        }
+    </style>
+</head>
+<body>
+    <div id="message">待機中</div>
+    <div id="status">接続中...</div>
+    <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    <script>
+        const MQTT_HOST = "public.cloud.shiftr.io";
+        const MQTT_PORT = 443;
+        const TOPIC = "Dorugebusha8/signal"; // curlで送るトピック名と合わせてください
+        const CLIENT_ID = "tablet_" + Math.random().toString(16).substr(2, 8);
+
+        const client = new Paho.MQTT.Client("wss://" + MQTT_HOST + ":" + MQTT_PORT + "/mqtt", CLIENT_ID);
+
+        // 受信したコマンドと表示内容の対応表
+        const signalMap = {
+            "red":    { color: "#e53935", text: "☠️危険物☠️" },
+            "blue":   { color: "#1e88e5", text: "😑悪くはない😑" },
+            "green":  { color: "#43a047", text: "🙂話しかけてよし🙂" },
+            "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️" },
+            "black":  { color: "#212121", text: "💣爆発寸前💣" },
+            "unknown":  { color: "#ffffff", text: "❓わからん❓" }
+        };
+
+        client.onMessageArrived = (message) => {
+            const command = message.payloadString.trim().toLowerCase();
+            const config = signalMap[command];
+
+            if (config) {
+                // 背景色と文字を更新
+                document.body.style.backgroundColor = config.color;
+                document.getElementById('message').innerText = config.text;
+                
+                // 文字色を黄色などの明るい色の時は黒っぽくする調整
+                document.getElementById('message').style.color = (command === "yellow" || command === "unknown") ? "#333" : "white";
+
+                // 音を鳴らす
+                const audio = document.getElementById('alertSound');
+                audio.play().catch(e => console.log("再生には画面タップが必要です"));
+            }
+            document.getElementById('status').innerText = "最終受信: " + command;
+        };
+
+        client.onConnectionLost = (responseObject) => {
+            document.getElementById('status').innerText = "再接続中...";
+            setTimeout(connect, 5000);
+        };
+
+        function connect() {
+            client.connect({
+                useSSL: true,
+                onSuccess: () => {
+                    client.subscribe(TOPIC);
+                    document.getElementById('status').innerText = "接続済み: " + TOPIC;
+                },
+                userName: "public",
+                password: "public"
+            });
+        }
+
+        connect();
+    </script>
+</body>
+</html>
