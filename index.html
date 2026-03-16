@@ -10,38 +10,52 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             overflow: hidden; background-color: #222; 
             transition: background-color 0.5s;
-            display: flex; align-items: center; justify-content: center;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            display: flex; flex-direction: column; /* 縦に並べる */
+            align-items: center; justify-content: center;
+            font-family: sans-serif;
         }
-        /* 中央の大きな文字 */
+
+        /* 上段：固定文字列 */
+        #fixed-title {
+            font-size: 5vw;
+            color: rgba(255, 255, 255, 0.7); /* 少し透けさせる */
+            margin-bottom: 2vh;
+            text-transform: uppercase;
+            letter-spacing: 0.5vw;
+        }
+
+        /* 下段：変動する大きな文字 */
         #message {
-            font-size: 10vw; /* 画面幅に合わせて自動調整 */
+            font-size: 25vw;
             font-weight: bold;
             color: white;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
             text-align: center;
-            user-select: none;
+            line-height: 1;
         }
+
         #status { 
             position: absolute; bottom: 10px; left: 10px; 
-            color: white; font-size: 12px; opacity: 0.5; 
+            color: white; font-size: 12px; opacity: 0.3; 
         }
     </style>
 </head>
 <body>
+    <div id="fixed-title">多希子の調子</div>
+    
     <div id="message">待機中</div>
+    
     <div id="status">接続中...</div>
     <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
     <script>
         const MQTT_HOST = "public.cloud.shiftr.io";
         const MQTT_PORT = 443;
-        const TOPIC = "Dorugebusha8/signal"; // curlで送るトピック名と合わせてください
+        const TOPIC = "Dorugebusha8/signal";
         const CLIENT_ID = "tablet_" + Math.random().toString(16).substr(2, 8);
 
         const client = new Paho.MQTT.Client("wss://" + MQTT_HOST + ":" + MQTT_PORT + "/mqtt", CLIENT_ID);
 
-        // 受信したコマンドと表示内容の対応表
         const signalMap = {
             "red":    { color: "#e53935", text: "☠️危険物☠️" },
             "blue":   { color: "#1e88e5", text: "😑悪くはない😑" },
@@ -56,21 +70,17 @@
             const config = signalMap[command];
 
             if (config) {
-                // 背景色と文字を更新
                 document.body.style.backgroundColor = config.color;
                 document.getElementById('message').innerText = config.text;
-                
-                // 文字色を黄色などの明るい色の時は黒っぽくする調整
-                document.getElementById('message').style.color = (command === "yellow" || command === "unknown") ? "#333" : "white";
+                document.getElementById('message').style.color = (command === "yellow") ? "#333" : "white";
 
-                // 音を鳴らす
                 const audio = document.getElementById('alertSound');
-                audio.play().catch(e => console.log("再生には画面タップが必要です"));
+                audio.play().catch(e => {});
             }
             document.getElementById('status').innerText = "最終受信: " + command;
         };
 
-        client.onConnectionLost = (responseObject) => {
+        client.onConnectionLost = () => {
             document.getElementById('status').innerText = "再接続中...";
             setTimeout(connect, 5000);
         };
@@ -80,13 +90,12 @@
                 useSSL: true,
                 onSuccess: () => {
                     client.subscribe(TOPIC);
-                    document.getElementById('status').innerText = "接続済み: " + TOPIC;
+                    document.getElementById('status').innerText = "接続済み";
                 },
                 userName: "public",
                 password: "public"
             });
         }
-
         connect();
     </script>
 </body>
