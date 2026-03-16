@@ -71,8 +71,10 @@
 
             if (config) {
                 document.body.style.backgroundColor = config.color;
+                textColor = (command === "yellow" || command === "unknown") ? "#333" : "white";
+                document.getElementById('fixed-title').style.color = textColor;
                 document.getElementById('message').innerText = config.text;
-                document.getElementById('message').style.color = (command === "yellow") ? "#333" : "white";
+                document.getElementById('message').style.color = textColor;
 
                 const audio = document.getElementById('alertSound');
                 audio.play().catch(e => {});
