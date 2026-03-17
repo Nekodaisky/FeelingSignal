@@ -74,7 +74,7 @@
 
         const signalMap = {
             "red": { color: "#e53935", text: "☠️危険物☠️", sound: "cartoon/continuous_slide_whistle.ogg" },
-            "blue": { color: "#1e88e5", text: "😑悪くはない😑", sound: "cartoon/cowbell_ringing.ogg"},
+            "blue": { color: "#1e88e5", text: "😑悪くはない😑", sound: "cartoon/cowbell_ringing.ogg" },
             "green": { color: "#43a047", text: "🙂話しかけてよし🙂", sound: "cartoon/cowbell_ringing.ogg" },
             "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️", sound: "cartoon/clown_horn.ogg" },
             "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "alarms/bugle_tune.ogg" },
@@ -100,15 +100,36 @@
                     audio.src = "https://actions.google.com/sounds/v1/" + config.sound;
                     audio.play().catch(e => { });
                 }
-
-                // リロードコマンドの場合は5秒後にページをリロード
-                if (command === "reload") {
-                    setTimeout(() => {
-                        location.reload();
-                    }, 5000);
-                }
             }
             document.getElementById('status').innerText = "最終受信: " + command;
+
+            // 黒信号の場合は3秒間だけ全画面を暗転
+            if (command === "black") {
+                // 現在の状態を保存してから暗転
+                const originalBgColor = document.body.style.backgroundColor;
+                const originalTitleColor = document.getElementById('fixed-title').style.color;
+                const originalMessageColor = document.getElementById('message').style.color;
+                const originalStatusColor = document.getElementById('status').style.color;
+
+                document.body.style.backgroundColor = "#000";
+                document.getElementById('fixed-title').style.color = "#000";
+                document.getElementById('message').style.color = "#000";
+                document.getElementById('status').style.color = "#000";
+
+                setTimeout(() => {
+                    document.body.style.backgroundColor = originalBgColor;
+                    document.getElementById('fixed-title').style.color = originalTitleColor;
+                    document.getElementById('message').style.color = originalMessageColor;
+                    document.getElementById('status').style.color = originalStatusColor;
+                }, 3000);
+            }
+
+            // リロードコマンドの場合は5秒後にページをリロード
+            if (command === "reload") {
+                setTimeout(() => {
+                    location.reload();
+                }, 5000);
+            }
         };
 
         client.onConnectionLost = () => {
