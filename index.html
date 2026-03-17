@@ -118,9 +118,11 @@
 
                 setTimeout(() => {
                     document.body.style.backgroundColor = originalBgColor;
-                    document.getElementById('fixed-title').innerText = originalTitle;
-                    document.getElementById('message').innerText = originalMessage;
-                    document.getElementById('status').innerText = originalStatus;
+                    setTimeout(() => {
+                        document.getElementById('fixed-title').innerText = originalTitle;
+                        document.getElementById('message').innerText = originalMessage;
+                        document.getElementById('status').innerText = originalStatus;
+                    }, 500);
                 }, 3000);
             }
 
