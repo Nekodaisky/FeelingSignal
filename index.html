@@ -57,7 +57,7 @@
 </head>
 
 <body>
-    <div id="fixed-title">多希子の調子</div>
+    <div id="fixed-title">現在の調子</div>
 
     <div id="message">待機中</div>
 
@@ -73,12 +73,12 @@
         const client = new Paho.MQTT.Client("wss://" + MQTT_HOST + ":" + MQTT_PORT + "/mqtt", CLIENT_ID);
 
         const signalMap = {
-            "red": { color: "#e53935", text: "☠️危険物☠️", sound: "alarms/bugle_tune.ogg" },
-            "blue": { color: "#1e88e5", text: "😑悪くはない😑", sound: "dots/confirmation_up.ogg"},
-            "green": { color: "#43a047", text: "🙂話しかけてよし🙂", sound: "dots/confirmation_up.ogg" },
-            "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️", sound: "alarms/beep_short.ogg" },
-            "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "emergency/ambulance_siren_distant.ogg" },
-            "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "alarms/mechanical_clock_ring.ogg" }
+            "red": { color: "#e53935", text: "☠️危険物☠️", sound: "cartoon/continuous_slide_whistle.ogg" },
+            "blue": { color: "#1e88e5", text: "😑悪くはない😑", sound: "cartoon/cowbell_ringing.ogg"},
+            "green": { color: "#43a047", text: "🙂話しかけてよし🙂", sound: "cartoon/cowbell_ringing.ogg" },
+            "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️", sound: "cartoon/clown_horn.ogg" },
+            "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "alarms/bugle_tune.ogg" },
+            "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "cartoon/cartoon_boing.ogg" }
         };
 
         client.onMessageArrived = (message) => {
@@ -91,6 +91,7 @@
                 document.getElementById('fixed-title').style.color = textColor;
                 document.getElementById('message').innerText = config.text;
                 document.getElementById('message').style.color = textColor;
+                document.getElementById('status').style.color = textColor;
 
                 // 音の鳴らし分け
                 if (config.sound) {
