@@ -78,7 +78,8 @@
             "green": { color: "#43a047", text: "🙂話しかけてよし🙂", sound: "cartoon/cowbell_ringing.ogg" },
             "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️", sound: "cartoon/clown_horn.ogg" },
             "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "alarms/bugle_tune.ogg" },
-            "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "cartoon/cartoon_boing.ogg" }
+            "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "cartoon/cartoon_boing.ogg" },
+            "reload": { color: "#333", text: "🔄再読み込み🔄", sound: "alarms/beep_short.ogg" }
         };
 
         client.onMessageArrived = (message) => {
@@ -98,6 +99,13 @@
                     const audio = document.getElementById('alertSound');
                     audio.src = "https://actions.google.com/sounds/v1/" + config.sound;
                     audio.play().catch(e => { });
+                }
+
+                // リロードコマンドの場合は5秒後にページをリロード
+                if (command === "reload") {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
                 }
             }
             document.getElementById('status').innerText = "最終受信: " + command;
