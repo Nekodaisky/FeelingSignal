@@ -107,20 +107,20 @@
             if (command === "black") {
                 // 現在の状態を保存してから暗転
                 const originalBgColor = document.body.style.backgroundColor;
-                const originalTitleColor = document.getElementById('fixed-title').style.color;
-                const originalMessageColor = document.getElementById('message').style.color;
-                const originalStatusColor = document.getElementById('status').style.color;
+                const originalTitle = document.getElementById('fixed-title').innerText;
+                const originalMessage = document.getElementById('message').innerText;
+                const originalStatus = document.getElementById('status').innerText;
 
+                document.getElementById('fixed-title').innerText = "";
+                document.getElementById('message').innerText = "";
+                document.getElementById('status').innerText = "";
                 document.body.style.backgroundColor = "#000";
-                document.getElementById('fixed-title').style.color = "#000";
-                document.getElementById('message').style.color = "#000";
-                document.getElementById('status').style.color = "#000";
 
                 setTimeout(() => {
+                    document.getElementById('fixed-title').innerText = originalTitle;
+                    document.getElementById('message').innerText = originalMessage;
+                    document.getElementById('status').innerText = originalStatus;
                     document.body.style.backgroundColor = originalBgColor;
-                    document.getElementById('fixed-title').style.color = originalTitleColor;
-                    document.getElementById('message').style.color = originalMessageColor;
-                    document.getElementById('status').style.color = originalStatusColor;
                 }, 3000);
             }
 
