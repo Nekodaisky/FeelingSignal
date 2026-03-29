@@ -103,7 +103,15 @@
 
                 // contactメッセージの場合は連絡内容を表示
                 if (command === "contact" && contactContent) {
-                    document.getElementById('message').innerText = config.text + contactContent;
+                    // セキュリティ対策：文字数制限とサニタイズ
+                    const maxLength = 50;
+                    const sanitizedContent = contactContent
+                        .replace(/[<>]/g, '')  // HTMLタグを除去
+                        .replace(/javascript:/gi, '')  // JavaScriptプロトコルを除去
+                        .replace(/on\w+=/gi, '')  // イベントハンドラを除去
+                        .slice(0, maxLength);  // 文字数制限
+                    
+                    document.getElementById('message').innerText = config.text + sanitizedContent;
                 } else {
                     document.getElementById('message').innerText = config.text;
                 }
