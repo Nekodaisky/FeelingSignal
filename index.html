@@ -80,7 +80,7 @@
             "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "alarms/bugle_tune.ogg" },
             "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "cartoon/cartoon_boing.ogg" },
             "reload": { color: "#333", text: "🔄再読み込み🔄", sound: "alarms/beep_short.ogg" },
-            "contact": { color: "#5e35b1", text: "📧業務連絡📧\n", sound: "notifications/simple_notification.ogg" }
+            // "contact": { color: "#5e35b1", text: "📧業務連絡📧\n", sound: "notifications/simple_notification.ogg" }
         };
 
         // contactメッセージを受け付けるかどうかの制御フラグ
@@ -93,7 +93,7 @@
             let contactContent = "";
 
             // contactメッセージの場合、連絡内容を抽出
-            if (ENABLE_CONTACT_MESSAGES && command.startsWith("contact:")) {
+            if (command.startsWith("contact:")) {
                 command = "contact";
                 contactContent = payload.substring(8).trim();
             }
