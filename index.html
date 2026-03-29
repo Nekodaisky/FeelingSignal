@@ -83,13 +83,17 @@
             "contact": { color: "#5e35b1", text: "📧業務連絡📧\n", sound: "notifications/simple_notification.ogg" }
         };
 
+        // contactメッセージを受け付けるかどうかの制御フラグ
+        // この行をコメントアウトするとcontactメッセージを無効化します
+        // const ENABLE_CONTACT_MESSAGES = true;
+
         client.onMessageArrived = (message) => {
             const payload = message.payloadString.trim();
             let command = payload.toLowerCase();
             let contactContent = "";
 
             // contactメッセージの場合、連絡内容を抽出
-            if (command.startsWith("contact:")) {
+            if (ENABLE_CONTACT_MESSAGES && command.startsWith("contact:")) {
                 command = "contact";
                 contactContent = payload.substring(8).trim();
             }
