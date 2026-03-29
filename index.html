@@ -79,18 +79,35 @@
             "yellow": { color: "#fdd835", text: "⚠️取り扱い注意⚠️", sound: "cartoon/clown_horn.ogg" },
             "bomb": { color: "#212121", text: "💣爆発寸前💣", sound: "alarms/bugle_tune.ogg" },
             "unknown": { color: "#eeeeee", text: "❓わからん❓", sound: "cartoon/cartoon_boing.ogg" },
-            "reload": { color: "#333", text: "🔄再読み込み🔄", sound: "alarms/beep_short.ogg" }
+            "reload": { color: "#333", text: "🔄再読み込み🔄", sound: "alarms/beep_short.ogg" },
+            "contact": { color: "#5e35b1", text: "📧業務連絡📧\n", sound: "notifications/simple_notification.ogg" }
         };
 
         client.onMessageArrived = (message) => {
-            const command = message.payloadString.trim().toLowerCase();
+            const payload = message.payloadString.trim();
+            let command = payload.toLowerCase();
+            let contactContent = "";
+
+            // contactメッセージの場合、連絡内容を抽出
+            if (command.startsWith("contact:")) {
+                command = "contact";
+                contactContent = payload.substring(8).trim();
+            }
+
             const config = signalMap[command];
 
             if (config) {
                 document.body.style.backgroundColor = config.color;
                 textColor = (command === "yellow" || command === "unknown") ? "#333" : "white";
                 document.getElementById('fixed-title').style.color = textColor;
-                document.getElementById('message').innerText = config.text;
+
+                // contactメッセージの場合は連絡内容を表示
+                if (command === "contact" && contactContent) {
+                    document.getElementById('message').innerText = config.text + contactContent;
+                } else {
+                    document.getElementById('message').innerText = config.text;
+                }
+
                 document.getElementById('message').style.color = textColor;
                 document.getElementById('status').style.color = textColor;
 
@@ -101,7 +118,7 @@
                     audio.play().catch(e => { });
                 }
             }
-            document.getElementById('status').innerText = "最終受信: " + command;
+            document.getElementById('status').innerText = "最終受信: " + payload;
 
             // 黒信号の場合は3秒間だけ全画面を暗転
             if (command === "black") {
